@@ -2,6 +2,8 @@
 
 module Main where
 
+import Shelly
+
 import Data.List
 import System.Environment
 import System.Process
