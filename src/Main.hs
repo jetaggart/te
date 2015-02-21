@@ -11,8 +11,8 @@ import System.Exit
 import Data.Text (pack)
 
 
-executeTests :: [String] -> IO ()
-executeTests testArgs = rawSystem "rspec" testArgs >> return ()
+executeTests :: [String] -> Sh ()
+executeTests testArgs = liftIO $ rawSystem "rspec" testArgs >> return ()
 
 main :: IO ()
 main = shelly $ verbosely $ do
@@ -21,7 +21,7 @@ main = shelly $ verbosely $ do
       testArgs = tail args
   
   case teCommand of
-    "run" -> liftIO $ executeTests testArgs
+    "run" -> executeTests testArgs
     "init" -> echo "nothing yet"
     otherwise -> echo "bad te argument"
 
