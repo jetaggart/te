@@ -15,4 +15,6 @@ executable te
   build-depends:       
       base >=4.7 && <4.8
     , shelly ==1.6.*
+    , text ==1.2.0.4
     , process ==1.2.0.0
+
