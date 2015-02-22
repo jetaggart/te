@@ -21,6 +21,9 @@ te run spec.rb
 
 Check out this repository, run `cabal install`, copy the `te` executable into your executable path of choice.
 
+### Editor support
+* [vim](https://github.com/jetaggart/vim-te)
+
 ## Vision
 
 Eventually, running tests for multiple langauges and frameworks will be support. 
