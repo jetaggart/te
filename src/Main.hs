@@ -42,7 +42,7 @@ teFail = do
   exit 1
 
 main :: IO ()
-main = shelly $ tracing False $ do
+main = shelly $ do
   args <- liftIO getArgs
 
   let teCommand = head args
