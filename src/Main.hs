@@ -15,7 +15,7 @@ import Control.Monad
 import Data.Text (pack, unpack, Text, splitOn, strip)
 
 teRun :: [String] -> Sh ()
-teRun testArgs = do 
+teRun testArgs = do
   let stringArgs = intercalate " " testArgs
       testCommand = (fromText . pack) $ "echo \"rspec " ++ stringArgs ++ "\" > .te-pipe"
 
@@ -23,7 +23,7 @@ teRun testArgs = do
     run_ testCommand []
 
   return ()
- 
+
 teInit :: Sh ()
 teInit = do
   cmd "mkfifo" ".te-pipe"
@@ -37,7 +37,7 @@ teListen = forever $ do
 
 teFail :: Sh ()
 teFail = do
-  echo "I don't know what to do. Please see README for more info." 
+  echo "I don't know what to do. Please see README for more info."
   echo "Valid commands are: run, listen."
   quietExit 1
 
@@ -47,10 +47,10 @@ main = shelly $ do
 
   let teCommand = head args
       testArgs = tail args
-  
+
   case teCommand of
     "run" -> teRun testArgs
     "listen" -> teListen
-    otherwise -> teFail 
+    otherwise -> teFail
 
   return ()
