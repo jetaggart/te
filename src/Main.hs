@@ -19,9 +19,7 @@ teRun testArgs = do
   let stringArgs = intercalate " " testArgs
       testCommand = (fromText . pack) $ "echo \"rspec " ++ stringArgs ++ "\" > .te-pipe"
 
-  escaping False $ do
-    run_ testCommand []
-
+  escaping False $ run_ testCommand []
   return ()
 
 teInit :: Sh ()
