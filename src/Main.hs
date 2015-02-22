@@ -38,8 +38,9 @@ teListen = forever $ do
 
 teFail :: Sh ()
 teFail = do
-  echo "I don't know what to do. Valid commands are: run, listen. Please see README for more info."
-  exit 1
+  echo "I don't know what to do. Please see README for more info." 
+  echo "Valid commands are: run, listen."
+  quietExit 1
 
 main :: IO ()
 main = shelly $ do
