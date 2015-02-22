@@ -31,7 +31,7 @@ teInit = do
 
 teListen :: Sh ()
 teListen = escaping False $  forever $ do
-  run "cat" [".te-pipe"] -|- run "sh" []
+  liftIO $ system "cat .te-pipe | sh"
   return ()
 
 main :: IO ()
