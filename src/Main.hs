@@ -13,6 +13,19 @@ import System.Exit
 import Control.Monad
 import Data.Text (pack, unpack, Text, splitOn, strip, intercalate, concat)
 
+
+main :: IO ()
+main = shelly $ do
+  args <- liftIO getArgs
+
+  let teCommand = head args
+      testArgs = tail args
+
+  case teCommand of
+    "run" -> teRun $ map pack testArgs
+    "listen" -> teListen
+    otherwise -> teFail
+
 teRun :: [Text] -> Sh ()
 teRun testArgs = do
   let stringArgs = intercalate " " testArgs
@@ -56,16 +69,3 @@ teFail = do
   echo "Valid commands are: run, listen."
   quietExit 1
 
-main :: IO ()
-main = shelly $ do
-  args <- liftIO getArgs
-
-  let teCommand = head args
-      testArgs = tail args
-
-  case teCommand of
-    "run" -> teRun $ map pack testArgs
-    "listen" -> teListen
-    otherwise -> teFail
-
-  return ()
