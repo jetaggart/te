@@ -36,11 +36,6 @@ teRun testArgs = do
   return ()
 
 
-teInit :: Sh ()
-teInit = do
-  cmd "mkfifo" ".te-pipe"
-
-
 hasPipe :: Sh Bool
 hasPipe = hasFile ".te-pipe"
   where
@@ -58,7 +53,7 @@ teListen = forever $ do
     go :: Bool -> Sh ()
     go pipePresent = case pipePresent of
                        True -> listen
-                       False -> teInit >> listen
+                       False -> init >> listen
 
     listen :: Sh ()
     listen = do
@@ -66,6 +61,10 @@ teListen = forever $ do
       let splitCommand = (map unpack . splitOn " ") $ strip command
       liftIO $ rawSystem (head splitCommand) (tail splitCommand)
       return ()
+
+    init :: Sh ()
+    init = cmd "mkfifo" ".te-pipe"
+
 
 
 teFail :: Sh ()
