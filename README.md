@@ -7,7 +7,7 @@ Well.. soon to be universal test runner. The vision is to build a generic comman
 All tests:
 
 ```bash
-te run spec.rb
+te run
 ```
 
 Single Test:
