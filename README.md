@@ -4,8 +4,22 @@ Well.. soon to be universal test runner. The vision is to build a generic comman
 
 ## Usage
 
+All tests:
+
 ```bash
 te run spec.rb
+```
+
+Single Test:
+
+```bash
+te run spec.rb
+```
+
+Single line:
+
+```bash
+te run spec.rb:12
 ```
 
 ### Async usage
