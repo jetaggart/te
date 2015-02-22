@@ -17,6 +17,10 @@ In the other run your tests!
 te run spec.rb
 ```
 
+## Installation
+
+Check out this repository, run `cabal install`, copy the `te` executable into your executable path of choice.
+
 ## Vision
 
 Eventually, running tests for multiple langauges and frameworks will be support. 
