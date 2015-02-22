@@ -10,7 +10,7 @@ From the root directory of your project, open two terminals (or splits/panes/wha
 te listen
 ```
 
-In the other run your tests!
+In the other terminal run your tests!
 
 ```bash
 te run spec.rb
