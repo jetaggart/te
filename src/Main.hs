@@ -24,7 +24,6 @@ teRun testArgs = do
 
   return ()
  
-
 teInit :: Sh ()
 teInit = do
   cmd "mkfifo" ".te-pipe"
