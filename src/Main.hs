@@ -45,8 +45,7 @@ main = shelly $ do
   
   case teCommand of
     "run" -> teRun testArgs
-    "init" -> teInit
     "listen" -> teListen
-    otherwise -> echo "bad te argument"
+    otherwise -> echo "I don't know what to do. Valid commands are: run, listen. Please see README for more info."
 
   return ()
