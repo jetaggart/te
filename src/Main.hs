@@ -37,7 +37,7 @@ teListen = forever $ do
   return ()
 
 main :: IO ()
-main = shelly $ verbosely $ do
+main = shelly $ do
   args <- liftIO getArgs
 
   let teCommand = head args
