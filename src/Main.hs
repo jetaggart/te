@@ -3,7 +3,7 @@
 
 module Main where
 
-import Prelude hiding (FilePath)
+import Prelude hiding (FilePath, split)
 
 import Shelly
 
@@ -12,7 +12,7 @@ import System.Environment
 import System.Process
 import System.Exit
 import Control.Monad
-import Data.Text (pack)
+import Data.Text (pack, unpack, Text, splitOn, strip)
 
 teRun :: [String] -> Sh ()
 teRun testArgs = do 
@@ -30,8 +30,10 @@ teInit = do
   cmd "mkfifo" ".te-pipe"
 
 teListen :: Sh ()
-teListen = escaping False $  forever $ do
-  liftIO $ system "cat .te-pipe | sh"
+teListen = forever $ do
+  command <- cmd "cat" ".te-pipe" :: Sh Text
+  let splitCommand = (map unpack . splitOn " ") $ strip command
+  liftIO $ rawSystem (head splitCommand) (tail splitCommand)
   return ()
 
 main :: IO ()
