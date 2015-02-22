@@ -1,8 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ExtendedDefaultRules #-}
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
 
 module Main where
+
+import Prelude hiding (FilePath)
 
 import Shelly
 
@@ -16,8 +17,11 @@ import Data.Text (pack)
 teRun :: [String] -> Sh ()
 teRun testArgs = do 
   let stringArgs = intercalate " " testArgs
-      testCommand ="\"rspec " ++ stringArgs ++ "\""
-  liftIO $ rawSystem ("echo " ++ testCommand ++ " > .te-pipe") []
+      testCommand = (fromText . pack) $ "echo \"rspec " ++ stringArgs ++ "\" > .te-pipe"
+
+  escaping False $ do
+    run_ testCommand []
+
   return ()
  
 
