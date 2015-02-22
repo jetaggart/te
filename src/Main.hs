@@ -28,12 +28,23 @@ main = shelly $ do
 
 
 teRun :: [Text] -> Sh ()
-teRun testArgs = do
-  let stringArgs = intercalate " " testArgs
-      testCommand = fromText $ concat ["echo \"rspec ", stringArgs, "\" > .te-pipe"]
+teRun testArgs = do 
+  go =<< hasPipe
+  where
+    go :: Bool -> Sh ()
+    go pipePresent = case pipePresent of
+                       True -> asynchronous
+                       False -> synchronous
 
-  escaping False $ run_ testCommand []
-  return ()
+    asynchronous :: Sh ()
+    asynchronous = do
+      let stringArgs = intercalate " " testArgs
+          testCommand = fromText $ concat ["echo \"rspec ", stringArgs, "\" > .te-pipe"]
+
+      escaping False $ run_ testCommand []
+
+    synchronous :: Sh ()
+    synchronous = runTestCommand "rspec" testArgs
 
 
 hasPipe :: Sh Bool
@@ -46,8 +57,8 @@ hasPipe = hasFile ".te-pipe"
 
 
 teListen :: Sh ()
-teListen = forever $ do
-  go <$> hasPipe
+teListen = forever $ do 
+  go =<< hasPipe
 
   where 
     go :: Bool -> Sh ()
@@ -58,13 +69,18 @@ teListen = forever $ do
     listen :: Sh ()
     listen = do
       command <- cmd "cat" ".te-pipe" :: Sh Text
-      let splitCommand = (map unpack . splitOn " ") $ strip command
-      liftIO $ rawSystem (head splitCommand) (tail splitCommand)
-      return ()
+      let splitCommand = splitOn " " $ strip command
+      runTestCommand (head splitCommand) (tail splitCommand)
 
     init :: Sh ()
     init = cmd "mkfifo" ".te-pipe"
 
+runTestCommand :: Text -> [Text] -> Sh ()
+runTestCommand commandText argsText = do 
+  let command = unpack commandText
+      args = map unpack argsText
+  liftIO $ rawSystem command args
+  return ()
 
 
 teFail :: Sh ()
