@@ -26,6 +26,7 @@ main = shelly $ do
     "listen" -> teListen
     otherwise -> teFail
 
+
 teRun :: [Text] -> Sh ()
 teRun testArgs = do
   let stringArgs = intercalate " " testArgs
@@ -34,9 +35,11 @@ teRun testArgs = do
   escaping False $ run_ testCommand []
   return ()
 
+
 teInit :: Sh ()
 teInit = do
   cmd "mkfifo" ".te-pipe"
+
 
 hasPipe :: Sh Bool
 hasPipe = hasFile ".te-pipe"
@@ -45,6 +48,7 @@ hasPipe = hasFile ".te-pipe"
     hasFile filename = do 
       files <- ls $ fromText "."
       return $ any (== "./.te-pipe") files 
+
 
 teListen :: Sh ()
 teListen = forever $ do
@@ -62,6 +66,7 @@ teListen = forever $ do
       let splitCommand = (map unpack . splitOn " ") $ strip command
       liftIO $ rawSystem (head splitCommand) (tail splitCommand)
       return ()
+
 
 teFail :: Sh ()
 teFail = do
