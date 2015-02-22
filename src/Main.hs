@@ -3,21 +3,20 @@
 
 module Main where
 
-import Prelude hiding (FilePath, split)
+import Prelude hiding (FilePath, split, concat)
 
 import Shelly
 
-import qualified Data.List as L
 import System.Environment
 import System.Process
 import System.Exit
 import Control.Monad
-import Data.Text (pack, unpack, Text, splitOn, strip, intercalate)
+import Data.Text (pack, unpack, Text, splitOn, strip, intercalate, concat)
 
-teRun :: [String] -> Sh ()
+teRun :: [Text] -> Sh ()
 teRun testArgs = do
-  let stringArgs = L.intercalate " " testArgs
-      testCommand = (fromText . pack) $ "echo \"rspec " ++ stringArgs ++ "\" > .te-pipe"
+  let stringArgs = intercalate " " testArgs
+      testCommand = fromText $ concat ["echo \"rspec ", stringArgs, "\" > .te-pipe"]
 
   escaping False $ run_ testCommand []
   return ()
@@ -61,7 +60,7 @@ main = shelly $ do
       testArgs = tail args
 
   case teCommand of
-    "run" -> teRun testArgs
+    "run" -> teRun $ map pack testArgs
     "listen" -> teListen
     otherwise -> teFail
 
