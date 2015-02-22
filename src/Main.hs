@@ -36,6 +36,11 @@ teListen = forever $ do
   liftIO $ rawSystem (head splitCommand) (tail splitCommand)
   return ()
 
+teFail :: Sh ()
+teFail = do
+  echo "I don't know what to do. Valid commands are: run, listen. Please see README for more info."
+  exit 1
+
 main :: IO ()
 main = shelly $ do
   args <- liftIO getArgs
@@ -46,6 +51,6 @@ main = shelly $ do
   case teCommand of
     "run" -> teRun testArgs
     "listen" -> teListen
-    otherwise -> echo "I don't know what to do. Valid commands are: run, listen. Please see README for more info."
+    otherwise -> teFail 
 
   return ()
