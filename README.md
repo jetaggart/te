@@ -7,7 +7,6 @@ Well.. soon to be universal test runner. The vision is to build a generic comman
 From the root directory of your project, open two terminals (or splits/panes/whatever) and in one run:
 
 ```bash
-te init
 te listen
 ```
 
