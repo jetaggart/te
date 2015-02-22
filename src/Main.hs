@@ -25,22 +25,26 @@ teInit :: Sh ()
 teInit = do
   cmd "mkfifo" ".te-pipe"
 
-teListen :: Sh ()
-teListen = forever $ do
-  pipePresent <- hasFile ".te-pipe"
-
-  case pipePresent of
-    True -> go
-    False -> teInit >> go
-
-  where 
+hasPipe :: Sh Bool
+hasPipe = hasFile ".te-pipe"
+  where
     hasFile :: Text -> Sh Bool
     hasFile filename = do 
       files <- ls $ fromText "."
       return $ any (== "./.te-pipe") files 
 
-    go :: Sh ()
-    go = do
+teListen :: Sh ()
+teListen = forever $ do
+  go <$> hasPipe
+
+  where 
+    go :: Bool -> Sh ()
+    go pipePresent = case pipePresent of
+                       True -> listen
+                       False -> teInit >> listen
+
+    listen :: Sh ()
+    listen = do
       command <- cmd "cat" ".te-pipe" :: Sh Text
       let splitCommand = (map unpack . splitOn " ") $ strip command
       liftIO $ rawSystem (head splitCommand) (tail splitCommand)
