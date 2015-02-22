@@ -7,16 +7,16 @@ import Prelude hiding (FilePath, split)
 
 import Shelly
 
-import Data.List
+import qualified Data.List as L
 import System.Environment
 import System.Process
 import System.Exit
 import Control.Monad
-import Data.Text (pack, unpack, Text, splitOn, strip)
+import Data.Text (pack, unpack, Text, splitOn, strip, intercalate)
 
 teRun :: [String] -> Sh ()
 teRun testArgs = do
-  let stringArgs = intercalate " " testArgs
+  let stringArgs = L.intercalate " " testArgs
       testCommand = (fromText . pack) $ "echo \"rspec " ++ stringArgs ++ "\" > .te-pipe"
 
   escaping False $ run_ testCommand []
@@ -28,10 +28,24 @@ teInit = do
 
 teListen :: Sh ()
 teListen = forever $ do
-  command <- cmd "cat" ".te-pipe" :: Sh Text
-  let splitCommand = (map unpack . splitOn " ") $ strip command
-  liftIO $ rawSystem (head splitCommand) (tail splitCommand)
-  return ()
+  pipePresent <- hasFile ".te-pipe"
+
+  case pipePresent of
+    True -> go
+    False -> teInit >> go
+
+  where 
+    hasFile :: Text -> Sh Bool
+    hasFile filename = do 
+      files <- ls $ fromText "."
+      return $ any (== "./.te-pipe") files 
+
+    go :: Sh ()
+    go = do
+      command <- cmd "cat" ".te-pipe" :: Sh Text
+      let splitCommand = (map unpack . splitOn " ") $ strip command
+      liftIO $ rawSystem (head splitCommand) (tail splitCommand)
+      return ()
 
 teFail :: Sh ()
 teFail = do
