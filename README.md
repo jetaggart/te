@@ -42,8 +42,10 @@ te run spec.rb
 
 ### os x
 
-`brew tap jetaggart/te`
-`brew install jetaggart/te/te`
+```bash
+brew tap jetaggart/te
+brew install jetaggart/te/te
+```
 
 ### Other platforms
 
