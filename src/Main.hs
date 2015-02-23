@@ -11,6 +11,7 @@ import System.Environment
 import System.Process
 import System.Exit
 import Control.Monad
+import Control.Exception (SomeException, Exception, AsyncException(UserInterrupt), throw)
 import Data.Text (pack, unpack, Text, splitOn, strip, intercalate, concat)
 
 
@@ -67,13 +68,22 @@ teListen = forever $ do
                        False -> init >> listen
 
     listen :: Sh ()
-    listen = do
+    listen = catch_sh listen' handleException
+
+    listen' = do
       command <- cmd "cat" ".te-pipe" :: Sh Text
       let splitCommand = splitOn " " $ strip command
       runTestCommand (head splitCommand) (tail splitCommand)
 
     init :: Sh ()
     init = cmd "mkfifo" ".te-pipe"
+
+    handleException :: AsyncException -> Sh a
+    handleException UserInterrupt = do
+      echo "Goodbye!"
+      quietExit 0
+
+    handleException e = throw e
 
 runTestCommand :: Text -> [Text] -> Sh ()
 runTestCommand commandText argsText = do 
