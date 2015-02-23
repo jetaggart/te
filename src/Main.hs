@@ -25,6 +25,7 @@ main = shelly $ do
   case teCommand of
     "run" -> teRun $ map pack testArgs
     "listen" -> teListen
+    "help" -> echo "Valid commands are: run, listen, help" >> quietExit 0
     otherwise -> teFail
 
 
