@@ -63,3 +63,7 @@ te run tests/MainSpec.hs:123
 Right now it only runs rspec. Next languages/frameworks to be support:
 * ruby minitest
 * haskell hspec
+
+## Inspiration
+
+The inconsistency of testing tools, inconsistency of plugins that run testing tools, the consistency of IDE test running (intellij), async test running being highly couple to applications, and Gary Bernhardt's destroy all software screencast #87: RUNNING TESTS ASYNCHRONOUSLY
