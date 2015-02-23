@@ -40,6 +40,13 @@ te run spec.rb
 
 ## Installation
 
+### os x
+
+`brew tap jetaggart/te`
+`brew install jetaggart/te/te`
+
+### Other platforms
+
 Check out this repository, run `cabal install`, copy the `te` executable into your executable path of choice.
 
 ### Editor support
