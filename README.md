@@ -2,7 +2,7 @@
 
 # te - universal test runner
 
-Well.. soon to be universal test runner. The vision is to build a generic command line interface for running tests. Because no one rights one language anymore.
+Well.. soon to be universal test runner. The vision is to build a generic command line interface for running tests. Because no one uses a single language anymore.
 
 ## Usage
 
