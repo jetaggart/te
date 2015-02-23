@@ -68,7 +68,7 @@ teListen = forever $ do
                        False -> init >> listen
 
     listen :: Sh ()
-    listen = catch_sh listen' handleException
+    listen = catch_sh listen' catchInterrupt
 
     listen' = do
       command <- cmd "cat" ".te-pipe" :: Sh Text
@@ -78,13 +78,13 @@ teListen = forever $ do
     init :: Sh ()
     init = cmd "mkfifo" ".te-pipe"
 
-    handleException :: AsyncException -> Sh a
-    handleException UserInterrupt = do
+    catchInterrupt :: AsyncException -> Sh a
+    catchInterrupt UserInterrupt = do
       cleanPipe
       echo "Goodbye!"
       quietExit 0
 
-    handleException e = throw e
+    catchInterrupt e = throw e
 
     cleanPipe :: Sh ()
     cleanPipe = cmd "rm" ".te-pipe"
