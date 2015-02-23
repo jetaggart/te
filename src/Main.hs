@@ -80,10 +80,14 @@ teListen = forever $ do
 
     handleException :: AsyncException -> Sh a
     handleException UserInterrupt = do
+      cleanPipe
       echo "Goodbye!"
       quietExit 0
 
     handleException e = throw e
+
+    cleanPipe :: Sh ()
+    cleanPipe = cmd "rm" ".te-pipe"
 
 runTestCommand :: Text -> [Text] -> Sh ()
 runTestCommand commandText argsText = do 
