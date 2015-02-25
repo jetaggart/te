@@ -77,12 +77,13 @@ teListen = forever $ do
       let splitCommand = splitOn " " $ strip command
       runTestCommand (head splitCommand) (tail splitCommand)
 
-      columns <- cmd "tput" "cols" :: Sh Text
+      columns <- silently $ cmd "tput" "cols" :: Sh Text
       let int = case (decimal columns) of
                   Right (i, _) -> i
                   Left _ -> 5
 
       echo $ replicate int "-"
+      echo ""
 
     init :: Sh ()
     init = cmd "mkfifo" ".te-pipe"
