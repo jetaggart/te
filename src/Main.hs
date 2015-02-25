@@ -3,7 +3,7 @@
 
 module Main where
 
-import Prelude hiding (FilePath, split, concat)
+import Prelude hiding (FilePath, split, concat, replicate)
 
 import Shelly
 
@@ -12,7 +12,8 @@ import System.Process
 import System.Exit
 import Control.Monad
 import Control.Exception (SomeException, Exception, AsyncException(UserInterrupt), throw)
-import Data.Text (pack, unpack, Text, splitOn, strip, intercalate, concat)
+import Data.Text (pack, unpack, Text, splitOn, strip, intercalate, concat, replicate)
+import Data.Text.Read (decimal)
 
 
 main :: IO ()
@@ -30,7 +31,7 @@ main = shelly $ do
 
 
 teRun :: [Text] -> Sh ()
-teRun testArgs = do 
+teRun testArgs = do
   go =<< hasPipe
   where
     go :: Bool -> Sh ()
@@ -53,16 +54,16 @@ hasPipe :: Sh Bool
 hasPipe = hasFile ".te-pipe"
   where
     hasFile :: Text -> Sh Bool
-    hasFile filename = do 
+    hasFile filename = do
       files <- ls $ fromText "."
-      return $ any (== "./.te-pipe") files 
+      return $ any (== "./.te-pipe") files
 
 
 teListen :: Sh ()
-teListen = forever $ do 
+teListen = forever $ do
   go =<< hasPipe
 
-  where 
+  where
     go :: Bool -> Sh ()
     go pipePresent = case pipePresent of
                        True -> listen
@@ -75,6 +76,13 @@ teListen = forever $ do
       command <- cmd "cat" ".te-pipe" :: Sh Text
       let splitCommand = splitOn " " $ strip command
       runTestCommand (head splitCommand) (tail splitCommand)
+
+      columns <- cmd "tput" "cols" :: Sh Text
+      let int = case (decimal columns) of
+                  Right (i, _) -> i
+                  Left _ -> 5
+
+      echo $ replicate int "-"
 
     init :: Sh ()
     init = cmd "mkfifo" ".te-pipe"
@@ -90,8 +98,9 @@ teListen = forever $ do
     cleanPipe :: Sh ()
     cleanPipe = cmd "rm" ".te-pipe"
 
+
 runTestCommand :: Text -> [Text] -> Sh ()
-runTestCommand commandText argsText = do 
+runTestCommand commandText argsText = do
   let command = unpack commandText
       args = map unpack argsText
   liftIO $ rawSystem command args
