@@ -26,6 +26,7 @@ main = shelly $ do
   case teCommand of
     "run" -> teRun $ map pack testArgs
     "listen" -> teListen
+    "async-available" -> teAsyncAvailable
     "help" -> echo "Valid commands are: run, listen, help" >> quietExit 0
     otherwise -> teFail
 
@@ -49,6 +50,12 @@ teRun testArgs = do
     synchronous :: Sh ()
     synchronous = runTestCommand "rspec" testArgs
 
+teAsyncAvailable :: Sh ()
+teAsyncAvailable = go =<< hasPipe
+  where go pipe = case pipe of
+                    True -> quietExit 0
+                    False -> quietExit 1
+                    
 
 hasPipe :: Sh Bool
 hasPipe = hasFile ".te-pipe"
