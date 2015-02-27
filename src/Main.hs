@@ -7,8 +7,8 @@ import Data.Text (pack)
 
 import Shelly
 
-import Te.Imports
-import qualified Te.Commands as Te
+import Import
+import qualified Te as Te
 
 
 main :: IO ()

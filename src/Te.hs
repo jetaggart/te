@@ -1,6 +1,6 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 
-module Te.Commands (test, asyncAvailable, listen, fail, commands) where
+module Te (test, asyncAvailable, listen, fail, commands) where
 
 import System.Process
 import System.Exit
@@ -13,7 +13,7 @@ import Data.Text.Read (decimal)
 
 import Shelly
 
-import Te.Imports
+import Import
 
 test :: [Text] -> Sh ()
 test testArgs = do
