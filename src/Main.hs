@@ -1,19 +1,22 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ExtendedDefaultRules #-}
 
+
 module Main where
-
-import Prelude hiding (FilePath, split, concat, replicate)
-
-import Shelly
 
 import System.Environment
 import System.Process
 import System.Exit
+
 import Control.Monad
 import Control.Exception (SomeException, Exception, AsyncException(UserInterrupt), throw)
+
 import Data.Text (pack, unpack, Text, splitOn, strip, intercalate, concat, replicate)
 import Data.Text.Read (decimal)
+
+import Shelly
+
+import Te.Imports
 
 
 main :: IO ()
@@ -24,7 +27,7 @@ main = shelly $ do
       testArgs = tail args
 
   case teCommand of
-    "run" -> teRun $ map pack testArgs
+    "run" -> teRun $ fmap pack testArgs
     "listen" -> teListen
     "async-available" -> teAsyncAvailable
     "help" -> echo "Valid commands are: run, listen, help" >> quietExit 0
@@ -55,7 +58,7 @@ teAsyncAvailable = go =<< hasPipe
   where go pipe = case pipe of
                     True -> quietExit 0
                     False -> quietExit 1
-                    
+
 
 hasPipe :: Sh Bool
 hasPipe = hasFile ".te-pipe"
@@ -110,7 +113,7 @@ teListen = forever $ do
 runTestCommand :: Text -> [Text] -> Sh ()
 runTestCommand commandText argsText = do
   let command = unpack commandText
-      args = map unpack argsText
+      args = fmap unpack argsText
   liftIO $ rawSystem command args
   return ()
 

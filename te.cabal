@@ -12,6 +12,7 @@ executable te
   main-is:             Main.hs
   hs-source-dirs:      src
   default-language:    Haskell2010
+  extensions: NoImplicitPrelude
   build-depends:       
       base >=4.7 && <4.8
     , shelly ==1.6.*
