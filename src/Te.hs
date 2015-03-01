@@ -37,15 +37,6 @@ test args = do
       runTest testFramework
 
 
-getTestFramework :: [Text] -> Sh TestFramework
-getTestFramework args = do
-  filePresent <- hasFile ".rspec"
-  echo $ (pack . show) filePresent
-  case filePresent of
-    True -> return $ TestFramework "rspec" args
-    False -> return $ TestFramework "ruby" ("-Itest" : args)
-
-
 commands :: Sh ()
 commands = echo "Valid commands are: run, listen, help" >> quietExit 0
 

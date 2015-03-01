@@ -1,15 +1,16 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 
-module Te.Runner (runTest, hasPipe, hasFile) where
+module Te.Runner (runTest, hasPipe, hasFile, getTestFramework) where
 
 import System.Process
-import Data.Text (Text, unpack, replicate, concat)
+import Data.Text (Text, pack, unpack, replicate, concat)
 import Data.Text.Read (decimal)
 
 import Shelly
 
 import Import
 import Te.Types
+import Te.Util
 
 
 runTest :: TestFramework -> Sh ()
@@ -26,14 +27,11 @@ runTest (TestFramework executable args)  = do
   echo ""
 
 
-hasPipe :: Sh Bool
-hasPipe = hasFile ".te-pipe"
-
-
-hasFile :: Text -> Sh Bool
-hasFile filename = do
-  let relativeFileName = (fromText . concat) ["./", filename]
-  files <- ls $ fromText "."
-  return $ any (== relativeFileName) files
-
+getTestFramework :: [Text] -> Sh TestFramework
+getTestFramework args = do
+  filePresent <- hasFile ".rspec"
+  echo $ (pack . show) filePresent
+  case filePresent of
+    True -> return $ TestFramework "rspec" args
+    False -> return $ TestFramework "ruby" ("-Itest" : args)
 
