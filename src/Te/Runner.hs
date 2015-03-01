@@ -61,6 +61,6 @@ getRunner args RSpec = do
 getRunner args Minitest = do
   testFile <- hasFile "test"
   return $ case testFile of
-             True -> Just $ TestRunner "ruby" ("-Itest" : args)
+             True -> Just $ TestRunner "rake" ("test" : args)
              False -> Nothing
 
