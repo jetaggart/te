@@ -12,23 +12,25 @@ import Te.Runner
 
 
 test :: [Text] -> Sh ()
-test testArgs = do
+test args = do
   go =<< hasPipe
   where
     go :: Bool -> Sh ()
-    go pipePresent = case pipePresent of
-                       True -> asynchronous
-                       False -> synchronous
+    go pipePresent = do
+      let executable = "rspec"
+      case pipePresent of
+        True -> asynchronous executable
+        False -> synchronous executable
 
-    asynchronous :: Sh ()
-    asynchronous = do
-      let stringArgs = intercalate " " testArgs
-          testCommand = fromText $ concat ["echo \"rspec ", stringArgs, "\" > .te-pipe"]
+    asynchronous :: Text -> Sh ()
+    asynchronous executable = do
+      let stringArgs = intercalate " " args
+          testCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" > .te-pipe"]
 
       escaping False $ run_ testCommand []
 
-    synchronous :: Sh ()
-    synchronous = runTestCommand "rspec" testArgs
+    synchronous :: Text -> Sh ()
+    synchronous executable = runTestCommand executable args
 
 
 commands :: Sh ()
