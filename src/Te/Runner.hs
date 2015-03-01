@@ -26,7 +26,6 @@ runTest (TestFramework executable args)  = do
   echo ""
 
 
-
 hasPipe :: Sh Bool
 hasPipe = hasFile ".te-pipe"
 
