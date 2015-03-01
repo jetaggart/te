@@ -12,7 +12,6 @@ import Shelly
 import Safe (headDef)
 
 import Import
-import Te.Types
 import Te.Util
 
 

@@ -1,13 +1,10 @@
 module Te (test, asyncAvailable, listen, fail, commands) where
 
-import System.Exit
-
-import Data.Text (pack, unpack, Text, splitOn, strip, intercalate, concat, replicate)
+import Data.Text (Text, intercalate, concat)
 
 import Shelly
 
 import Import
-import Te.Types
 import Te.Listen as Te (listen)
 import Te.Runner
 
