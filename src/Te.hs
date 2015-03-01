@@ -32,8 +32,7 @@ test args = do
       escaping False $ run_ testCommand []
 
     synchronous :: TestRunner -> Sh ()
-    synchronous testFramework = do
-      runTest testFramework
+    synchronous = runTest
 
 
 commands :: Sh ()
