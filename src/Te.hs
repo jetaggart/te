@@ -15,6 +15,7 @@ import Shelly
 
 import Import
 
+
 test :: [Text] -> Sh ()
 test testArgs = do
   go =<< hasPipe
@@ -59,10 +60,19 @@ listen = forever $ do
     listen :: Sh ()
     listen = catch_sh listen' catchInterrupt
 
+    listen' :: Sh ()
     listen' = do
       command <- cmd "cat" ".te-pipe" :: Sh Text
       let splitCommand = splitOn " " $ strip command
-      runTestCommand (head splitCommand) (tail splitCommand)
+
+      case (headMay splitCommand) of
+        Just c -> runCommand c (tailSafe splitCommand)
+        Nothing -> echo "Something went wrong, there should be a command passed" >> quietExit 1
+
+
+    runCommand :: Text -> [Text] -> Sh ()
+    runCommand command args = do
+      runTestCommand command args
 
       columns <- silently $ cmd "tput" "cols" :: Sh Text
       let int = case (decimal columns) of

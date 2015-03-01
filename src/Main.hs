@@ -15,12 +15,13 @@ main :: IO ()
 main = shelly $ do
   args <- liftIO getArgs
 
-  let teCommand = head args
-      testArgs = tail args
+  let teCommand = headMay args
+      testArgs = tailSafe args
 
   case teCommand of
-    "run" -> Te.test $ fmap pack testArgs
-    "listen" -> Te.listen
-    "async-available" -> Te.asyncAvailable
-    "help" -> Te.commands 
+    Nothing -> Te.fail
+    Just "run" -> Te.test $ fmap pack testArgs
+    Just "listen" -> Te.listen
+    Just "async-available" -> Te.asyncAvailable
+    Just "help" -> Te.commands
     otherwise -> Te.fail
