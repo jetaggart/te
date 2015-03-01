@@ -2,7 +2,7 @@
 
 # te - universal test runner
 
-Well.. soon to be universal test runner. The vision is to build a generic command line interface for running tests. Because no one uses a single language anymore. Supports RSpec.
+Well.. soon to be universal test runner. The vision is to build a generic command line interface for running tests. Because no one uses a single language anymore. Supports `rspec` and `minitest`.
 
 ## Usage
 
@@ -56,7 +56,7 @@ Check out this repository, run `cabal install`, copy the `te` executable into yo
 
 ## Vision
 
-Eventually, running tests for multiple langauges and frameworks will be support. 
+Eventually, running tests for multiple langauges and frameworks will be support.
 For example, to run rspec tests, you run:
 
 ```bash
@@ -72,8 +72,8 @@ te run tests/MainSpec.hs:123
 ```
 
 Right now it only runs rspec. Next languages/frameworks to be support:
-* ruby minitest
 * haskell hspec
+* go ginkgo
 
 ## Inspiration
 
