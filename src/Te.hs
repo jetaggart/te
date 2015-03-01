@@ -7,6 +7,7 @@ import Data.Text (pack, unpack, Text, splitOn, strip, intercalate, concat, repli
 import Shelly
 
 import Import
+import Te.Types
 import Te.Listen as Te (listen)
 import Te.Runner
 
@@ -17,20 +18,32 @@ test args = do
   where
     go :: Bool -> Sh ()
     go pipePresent = do
-      let executable = "rspec"
-      case pipePresent of
-        True -> asynchronous executable
-        False -> synchronous executable
+      testFramework <- getTestFramework args
 
-    asynchronous :: Text -> Sh ()
-    asynchronous executable = do
-      let stringArgs = intercalate " " args
+      case pipePresent of
+        True -> asynchronous testFramework
+        False -> synchronous testFramework
+
+    asynchronous :: TestFramework -> Sh ()
+    asynchronous (TestFramework executable testArgs) = do
+      let stringArgs = intercalate " " testArgs
           testCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" > .te-pipe"]
 
       escaping False $ run_ testCommand []
 
-    synchronous :: Text -> Sh ()
-    synchronous executable = runTestCommand executable args
+    synchronous :: TestFramework -> Sh ()
+    synchronous testFramework = do
+      echo $ (pack . show) testFramework
+      runTest testFramework
+
+
+getTestFramework :: [Text] -> Sh TestFramework
+getTestFramework args = do
+  filePresent <- hasFile ".rspec"
+  echo $ (pack . show) filePresent
+  case filePresent of
+    True -> return $ TestFramework "rspec" args
+    False -> return $ TestFramework "ruby" ("-Itest" : args)
 
 
 commands :: Sh ()

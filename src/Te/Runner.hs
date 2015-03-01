@@ -1,27 +1,40 @@
-module Te.Runner (runTestCommand, hasPipe) where
+{-# LANGUAGE ExtendedDefaultRules #-}
+
+module Te.Runner (runTest, hasPipe, hasFile) where
 
 import System.Process
-import Data.Text (Text, unpack)
+import Data.Text (Text, unpack, replicate, concat)
+import Data.Text.Read (decimal)
 
 import Shelly
 
 import Import
+import Te.Types
 
 
-runTestCommand :: Text -> [Text] -> Sh ()
-runTestCommand commandText argsText = do
-  let command = unpack commandText
-      args = fmap unpack argsText
-  liftIO $ rawSystem command args
-  return ()
+runTest :: TestFramework -> Sh ()
+runTest (TestFramework executable args)  = do
+  let command = unpack executable
+  liftIO $ rawSystem command (fmap unpack args)
+
+  columns <- silently $ cmd "tput" "cols" :: Sh Text
+  let int = case (decimal columns) of
+              Right (i, _) -> i
+              Left _ -> 5
+
+  echo $ replicate int "-"
+  echo ""
+
 
 
 hasPipe :: Sh Bool
 hasPipe = hasFile ".te-pipe"
-  where
-    hasFile :: Text -> Sh Bool
-    hasFile filename = do
-      files <- ls $ fromText "."
-      return $ any (== "./.te-pipe") files
+
+
+hasFile :: Text -> Sh Bool
+hasFile filename = do
+  let relativeFileName = (fromText . concat) ["./", filename]
+  files <- ls $ fromText "."
+  return $ any (== relativeFileName) files
 
 
