@@ -5,4 +5,4 @@ import Import
 
 type Executable = Text
 type Argument = Text
-data TestFramework = TestFramework Executable [Argument] deriving Show
+data TestRunner = TestRunner Executable [Argument] deriving Show

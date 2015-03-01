@@ -1,6 +1,6 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 
-module Te.Runner (runTest, hasPipe, hasFile, getTestFramework) where
+module Te.Runner (runTest, hasPipe, hasFile, getTestRunner) where
 
 import System.Process
 import Data.Text (Text, pack, unpack, replicate, concat)
@@ -13,8 +13,8 @@ import Te.Types
 import Te.Util
 
 
-runTest :: TestFramework -> Sh ()
-runTest (TestFramework executable args)  = do
+runTest :: TestRunner -> Sh ()
+runTest (TestRunner executable args)  = do
   let command = unpack executable
   liftIO $ rawSystem command (fmap unpack args)
 
@@ -27,11 +27,11 @@ runTest (TestFramework executable args)  = do
   echo ""
 
 
-getTestFramework :: [Text] -> Sh TestFramework
-getTestFramework args = do
+getTestRunner :: [Text] -> Sh TestRunner
+getTestRunner args = do
   filePresent <- hasFile ".rspec"
   echo $ (pack . show) filePresent
   case filePresent of
-    True -> return $ TestFramework "rspec" args
-    False -> return $ TestFramework "ruby" ("-Itest" : args)
+    True -> return $ TestRunner "rspec" args
+    False -> return $ TestRunner "ruby" ("-Itest" : args)
 

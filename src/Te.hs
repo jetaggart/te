@@ -18,20 +18,20 @@ test args = do
   where
     go :: Bool -> Sh ()
     go pipePresent = do
-      testFramework <- getTestFramework args
+      testFramework <- getTestRunner args
 
       case pipePresent of
         True -> asynchronous testFramework
         False -> synchronous testFramework
 
-    asynchronous :: TestFramework -> Sh ()
-    asynchronous (TestFramework executable testArgs) = do
+    asynchronous :: TestRunner -> Sh ()
+    asynchronous (TestRunner executable testArgs) = do
       let stringArgs = intercalate " " testArgs
           testCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" > .te-pipe"]
 
       escaping False $ run_ testCommand []
 
-    synchronous :: TestFramework -> Sh ()
+    synchronous :: TestRunner -> Sh ()
     synchronous testFramework = do
       echo $ (pack . show) testFramework
       runTest testFramework
