@@ -30,7 +30,6 @@ runTest (TestRunner executable args)  = do
 getTestRunner :: [Text] -> Sh TestRunner
 getTestRunner args = do
   filePresent <- hasFile ".rspec"
-  echo $ (pack . show) filePresent
   case filePresent of
     True -> return $ TestRunner "rspec" args
     False -> return $ TestRunner "ruby" ("-Itest" : args)

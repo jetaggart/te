@@ -33,7 +33,6 @@ test args = do
 
     synchronous :: TestRunner -> Sh ()
     synchronous testFramework = do
-      echo $ (pack . show) testFramework
       runTest testFramework
 
 
