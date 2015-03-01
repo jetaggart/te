@@ -1,12 +1,15 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 
-module Te.Runner (runTest, hasPipe, hasFile, getTestRunner) where
+module Te.Runner (runTest, hasPipe, hasFile, getTestRunner, TestRunner(..)) where
 
 import System.Process
 import Data.Text (Text, pack, unpack, replicate, concat)
 import Data.Text.Read (decimal)
+import Data.Maybe
+import Control.Monad (mapM)
 
 import Shelly
+import Safe (headDef)
 
 import Import
 import Te.Types
@@ -27,10 +30,37 @@ runTest (TestRunner executable args)  = do
   echo ""
 
 
-getTestRunner :: [Text] -> Sh TestRunner
+getTestRunner :: [Text] -> Sh (Maybe TestRunner)
 getTestRunner args = do
-  filePresent <- hasFile ".rspec"
-  case filePresent of
-    True -> return $ TestRunner "rspec" args
-    False -> return $ TestRunner "ruby" ("-Itest" : args)
+  runners <- mapM (getRunner args) frameworks
+  let validRunners = catMaybes runners
+  return $ case (catMaybes runners) of
+             [] -> Nothing
+             (r:_) -> Just r
+
+
+frameworks :: [TestFramework]
+frameworks = [RSpec, Minitest]
+
+
+type Executable = Text
+type Argument = Text
+data TestRunner = TestRunner Executable [Argument] deriving (Show)
+
+
+data TestFramework = RSpec | Minitest
+
+
+getRunner :: [Argument] -> TestFramework -> Sh (Maybe TestRunner)
+getRunner args RSpec = do
+  rspecFile <- hasFile ".rspec"
+  return $ case rspecFile of
+             True -> Just $ TestRunner "rspec" args
+             False -> Nothing
+
+getRunner args Minitest = do
+  testFile <- hasFile "test"
+  return $ case testFile of
+             True -> Just $ TestRunner "ruby" ("-Itest" : args)
+             False -> Nothing
 

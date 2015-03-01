@@ -18,11 +18,14 @@ test args = do
   where
     go :: Bool -> Sh ()
     go pipePresent = do
-      testFramework <- getTestRunner args
+      testRunner <- getTestRunner args
 
-      case pipePresent of
-        True -> asynchronous testFramework
-        False -> synchronous testFramework
+      case testRunner of
+        Just runner -> case pipePresent of
+                          True -> asynchronous runner
+                          False -> synchronous runner
+        Nothing -> echo "No test runner found" >> quietExit 1
+
 
     asynchronous :: TestRunner -> Sh ()
     asynchronous (TestRunner executable testArgs) = do
