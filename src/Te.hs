@@ -1,19 +1,14 @@
-{-# LANGUAGE ExtendedDefaultRules #-}
-
 module Te (test, asyncAvailable, listen, fail, commands) where
 
-import System.Process
 import System.Exit
 
-import Control.Monad hiding (fail)
-import Control.Exception (SomeException, Exception, AsyncException(UserInterrupt), throw)
-
 import Data.Text (pack, unpack, Text, splitOn, strip, intercalate, concat, replicate)
-import Data.Text.Read (decimal)
 
 import Shelly
 
 import Import
+import Te.Listen as Te (listen)
+import Te.Runner
 
 
 test :: [Text] -> Sh ()
@@ -46,79 +41,10 @@ asyncAvailable = go =<< hasPipe
                     True -> quietExit 0
                     False -> quietExit 1
 
-
-listen :: Sh ()
-listen = forever $ do
-  go =<< hasPipe
-
-  where
-    go :: Bool -> Sh ()
-    go pipePresent = case pipePresent of
-                       True -> listen
-                       False -> init >> listen
-
-    listen :: Sh ()
-    listen = catch_sh listen' catchInterrupt
-
-    listen' :: Sh ()
-    listen' = do
-      command <- cmd "cat" ".te-pipe" :: Sh Text
-      let splitCommand = splitOn " " $ strip command
-
-      case (headMay splitCommand) of
-        Just c -> runCommand c (tailSafe splitCommand)
-        Nothing -> echo "Something went wrong, there should be a command passed" >> quietExit 1
-
-
-    runCommand :: Text -> [Text] -> Sh ()
-    runCommand command args = do
-      runTestCommand command args
-
-      columns <- silently $ cmd "tput" "cols" :: Sh Text
-      let int = case (decimal columns) of
-                  Right (i, _) -> i
-                  Left _ -> 5
-
-      echo $ replicate int "-"
-      echo ""
-
-    init :: Sh ()
-    init = cmd "mkfifo" ".te-pipe"
-
-    catchInterrupt :: AsyncException -> Sh a
-    catchInterrupt UserInterrupt = do
-      cleanPipe
-      echo "Goodbye!"
-      quietExit 0
-
-    catchInterrupt e = throw e
-
-    cleanPipe :: Sh ()
-    cleanPipe = cmd "rm" ".te-pipe"
-
-
-
 fail :: Sh ()
 fail = do
   echo "I don't know what to do. Please see README for more info."
   echo "Valid commands are: run, listen."
   quietExit 1
-
-
-runTestCommand :: Text -> [Text] -> Sh ()
-runTestCommand commandText argsText = do
-  let command = unpack commandText
-      args = fmap unpack argsText
-  liftIO $ rawSystem command args
-  return ()
-
-
-hasPipe :: Sh Bool
-hasPipe = hasFile ".te-pipe"
-  where
-    hasFile :: Text -> Sh Bool
-    hasFile filename = do
-      files <- ls $ fromText "."
-      return $ any (== "./.te-pipe") files
 
 
