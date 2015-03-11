@@ -20,7 +20,8 @@ main = shelly $ do
 
   case teCommand of
     Nothing -> Te.fail
-    Just "run" -> Te.test $ fmap pack testArgs
+    Just "run" -> Te.run $ fmap pack testArgs
+    Just "run-last" -> Te.runLast
     Just "listen" -> Te.listen
     Just "async-available" -> Te.asyncAvailable
     Just "help" -> Te.commands

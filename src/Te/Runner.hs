@@ -1,6 +1,6 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 
-module Te.Runner (runTest, hasPipe, hasFile, getTestRunner, TestRunner(..)) where
+module Te.Runner (runTest, hasPipe, hasFile, getTestRunner, lastTestRunner, TestRunner(..)) where
 
 import System.Process
 import Data.Text (Text, pack, unpack, replicate, concat, intercalate)
@@ -9,15 +9,16 @@ import Data.Maybe
 import Control.Monad (mapM)
 
 import Shelly
-import Safe (headDef)
 
 import Import
 import Te.Util
+import Te.Types
+import qualified Te.History as History
 
 
 runTest :: TestRunner -> Sh ()
 runTest testRunner@(TestRunner exe args)  = do
-  record testRunner
+  History.record testRunner
 
   let executable = unpack exe
       arguments = fmap unpack args
@@ -32,7 +33,6 @@ runTest testRunner@(TestRunner exe args)  = do
   echo ""
 
 
-
 getTestRunner :: [Text] -> Sh (Maybe TestRunner)
 getTestRunner args = do
   runners <- mapM (getRunner args) frameworks
@@ -42,16 +42,16 @@ getTestRunner args = do
              (r:_) -> Just r
 
 
+lastTestRunner :: Sh (Maybe TestRunner)
+lastTestRunner = do
+  item <- History.lastItem
+  return $ case (headMay item) of
+             Just executable -> Just $ TestRunner executable (tailSafe item)
+             Nothing -> Nothing
+
+
 frameworks :: [TestFramework]
 frameworks = [RSpec, Minitest]
-
-
-type Executable = Text
-type Argument = Text
-data TestRunner = TestRunner Executable [Argument] deriving (Show)
-
-
-data TestFramework = RSpec | Minitest
 
 
 getRunner :: [Argument] -> TestFramework -> Sh (Maybe TestRunner)
@@ -66,9 +66,3 @@ getRunner args Minitest = do
   return $ case testFile of
              True -> Just $ TestRunner "rake" ("test" : args)
              False -> Nothing
-
-record :: TestRunner -> Sh ()
-record (TestRunner executable args) = do
-  let stringArgs = intercalate " " args
-      historyCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" >> .te-history"]
-  escaping False $ run_ historyCommand []
