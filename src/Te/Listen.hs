@@ -16,7 +16,7 @@ listen = forever $ do
   go =<< hasPipe
   where
     go pipePresent = case pipePresent of
-                       True -> listen'
+                       True -> echo "te already listening" >> quietExit 1
                        False -> init >> listen'
 
 
@@ -46,4 +46,3 @@ catchInterrupt e = throw e
 
 cleanPipe :: Sh ()
 cleanPipe = cmd "rm" ".te-pipe"
-
