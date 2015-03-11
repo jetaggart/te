@@ -30,12 +30,14 @@ run' testRunner = do
 
 
 asynchronous :: TestRunner -> Sh ()
-asynchronous (NewTestRunner executable testArgs) = do
+asynchronous (NewTestRunner exe args) = asynchronous' exe args
+asynchronous (OldTestRunner exe args) = asynchronous' exe args
+
+asynchronous' executable testArgs = do
   let stringArgs = intercalate " " testArgs
       testCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" > .te-pipe"]
 
   escaping False $ run_ testCommand []
-asynchronous
 
 
 synchronous :: TestRunner -> Sh ()
