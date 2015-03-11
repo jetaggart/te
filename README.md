@@ -24,6 +24,12 @@ Single line:
 te run spec.rb:12
 ```
 
+Run last:
+
+```bash
+te run-last
+```
+
 ### Async usage
 
 From the root directory of your project, open two terminals (or splits/panes/whatever) and in one run:
