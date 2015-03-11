@@ -3,7 +3,7 @@
 module Te.Runner (runTest, hasPipe, hasFile, getTestRunner, TestRunner(..)) where
 
 import System.Process
-import Data.Text (Text, pack, unpack, replicate, concat)
+import Data.Text (Text, pack, unpack, replicate, concat, intercalate)
 import Data.Text.Read (decimal)
 import Data.Maybe
 import Control.Monad (mapM)
@@ -16,9 +16,12 @@ import Te.Util
 
 
 runTest :: TestRunner -> Sh ()
-runTest (TestRunner executable args)  = do
-  let command = unpack executable
-  liftIO $ rawSystem command (fmap unpack args)
+runTest testRunner@(TestRunner exe args)  = do
+  record testRunner
+
+  let executable = unpack exe
+      arguments = fmap unpack args
+  liftIO $ rawSystem executable arguments
 
   columns <- silently $ cmd "tput" "cols" :: Sh Text
   let int = case (decimal columns) of
@@ -27,6 +30,7 @@ runTest (TestRunner executable args)  = do
 
   echo $ replicate int "-"
   echo ""
+
 
 
 getTestRunner :: [Text] -> Sh (Maybe TestRunner)
@@ -63,3 +67,8 @@ getRunner args Minitest = do
              True -> Just $ TestRunner "rake" ("test" : args)
              False -> Nothing
 
+record :: TestRunner -> Sh ()
+record (TestRunner executable args) = do
+  let stringArgs = intercalate " " args
+      historyCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" >> .te-history"]
+  escaping False $ run_ historyCommand []
