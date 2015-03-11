@@ -17,11 +17,16 @@ import qualified Te.History as History
 
 
 runTest :: TestRunner -> Sh ()
-runTest testRunner@(TestRunner exe args)  = do
+runTest testRunner@(NewTestRunner exe args) = do
   History.record testRunner
+  runTest' exe args
+
+runTest (OldTestRunner exe args) = runTest' exe args
 
   -- echo $ (pack . show) testRunner
 
+runTest' :: Executable -> [Argument] -> Sh ()
+runTest' exe args = do
   let executable = unpack exe
       arguments = fmap unpack args
   liftIO $ rawSystem executable arguments
@@ -56,11 +61,11 @@ getRunner :: [Argument] -> TestFramework -> Sh (Maybe TestRunner)
 getRunner args RSpec = do
   rspecFile <- hasFile ".rspec"
   return $ case rspecFile of
-             True -> Just $ TestRunner "rspec" args
+             True -> Just $ NewTestRunner "rspec" args
              False -> Nothing
 
 getRunner args Minitest = do
   testFile <- hasFile "test"
   return $ case testFile of
-             True -> Just $ TestRunner "rake" ("test" : args)
+             True -> Just $ NewTestRunner "rake" ("test" : args)
              False -> Nothing

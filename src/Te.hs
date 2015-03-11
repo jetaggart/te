@@ -30,7 +30,7 @@ run' testRunner = do
 
 
 asynchronous :: TestRunner -> Sh ()
-asynchronous (TestRunner executable testArgs) = do
+asynchronous (NewTestRunner executable testArgs) = do
   let stringArgs = intercalate " " testArgs
       testCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" > .te-pipe"]
 

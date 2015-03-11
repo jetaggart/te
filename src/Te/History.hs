@@ -12,7 +12,7 @@ import Te.Util
 
 
 record :: TestRunner -> Sh ()
-record (TestRunner executable args) = do
+record (NewTestRunner executable args) = do
   let stringArgs = intercalate " " args
       historyCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" >> .te-history"]
   escaping False $ run_ historyCommand []
@@ -25,7 +25,7 @@ last = do
   return $ case (headMay item) of
              Nothing -> Nothing
              Just "" -> Nothing
-             Just executable -> Just $ TestRunner executable (tailSafe item)
+             Just executable -> Just $ OldTestRunner executable (tailSafe item)
   where
     readHistory = do
       file <- hasFile ".te-history"

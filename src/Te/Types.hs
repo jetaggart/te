@@ -6,6 +6,8 @@ import Data.Text (Text(..))
 
 type Executable = Text
 type Argument = Text
-data TestRunner = TestRunner Executable [Argument] deriving (Show)
+data TestRunner = OldTestRunner Executable [Argument]
+                | NewTestRunner Executable [Argument]
+                deriving (Show)
 
 data TestFramework = RSpec | Minitest

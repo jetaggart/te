@@ -28,7 +28,7 @@ listen' = catch_sh go catchInterrupt
       let splitCommand = splitOn " " $ strip command
 
       case (headMay splitCommand) of
-        Just c -> runTest $ TestRunner c (tailSafe splitCommand)
+        Just c -> runTest $ NewTestRunner c (tailSafe splitCommand)
         Nothing -> echo "Something went wrong, there should be a command passed" >> quietExit 1
 
 
