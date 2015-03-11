@@ -12,11 +12,15 @@ import Te.Runner
 
 
 listen :: Sh ()
-listen = forever $ do
-  go =<< hasPipe
+listen = do
+  file <- hasFile ".te-pipe"
+  case file of
+    True -> echo "Te already listening for this directory" >> quietExit 1
+    False -> forever $ go =<< hasPipe
+
   where
     go pipePresent = case pipePresent of
-                       True -> echo "te already listening" >> quietExit 1
+                       True -> listen'
                        False -> init >> listen'
 
 

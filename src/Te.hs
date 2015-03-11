@@ -35,6 +35,7 @@ asynchronous (NewTestRunner executable testArgs) = do
       testCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" > .te-pipe"]
 
   escaping False $ run_ testCommand []
+asynchronous
 
 
 synchronous :: TestRunner -> Sh ()
