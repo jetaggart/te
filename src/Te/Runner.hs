@@ -20,6 +20,8 @@ runTest :: TestRunner -> Sh ()
 runTest testRunner@(TestRunner exe args)  = do
   History.record testRunner
 
+  -- echo $ (pack . show) testRunner
+
   let executable = unpack exe
       arguments = fmap unpack args
   liftIO $ rawSystem executable arguments
@@ -43,11 +45,7 @@ getTestRunner args = do
 
 
 lastTestRunner :: Sh (Maybe TestRunner)
-lastTestRunner = do
-  item <- History.lastItem
-  return $ case (headMay item) of
-             Just executable -> Just $ TestRunner executable (tailSafe item)
-             Nothing -> Nothing
+lastTestRunner = History.last
 
 
 frameworks :: [TestFramework]

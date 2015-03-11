@@ -1,12 +1,14 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 
-module Te.History (record, lastItem) where
+module Te.History (record, last) where
 
 import Import
 
-import Shelly
 import Data.Text (strip, intercalate, splitOn, concat, Text(..))
+import Shelly
+
 import Te.Types (TestRunner(..))
+import Te.Util
 
 
 record :: TestRunner -> Sh ()
@@ -16,7 +18,17 @@ record (TestRunner executable args) = do
   escaping False $ run_ historyCommand []
 
 
-lastItem :: Sh [Text]
-lastItem = do
-  lastHistoryItem <- cmd "tail" "-1" ".te-history" :: Sh Text
-  return $ splitOn " " $ strip lastHistoryItem
+last :: Sh (Maybe TestRunner)
+last = do
+  lastHistoryItem <- readHistory
+  let item = splitOn " " $ strip lastHistoryItem
+  return $ case (headMay item) of
+             Nothing -> Nothing
+             Just "" -> Nothing
+             Just executable -> Just $ TestRunner executable (tailSafe item)
+  where
+    readHistory = do
+      file <- hasFile ".te-history"
+      case file of
+        True -> cmd "tail" "-1" ".te-history" :: Sh Text
+        False -> return ""
