@@ -25,7 +25,7 @@ runTest (isNewTestRunner -> Just testRunner)  = do
 runTest (isOldTestRunner -> Just testRunner) = runTest' testRunner
 
 runTest' :: TestRunner -> Sh ()
-runTest' (isTestRunner -> Just (exe, args)) = do
+runTest' (isTestRunner -> Just (exe, rootDir, args)) = do
   let executable = unpack exe
       arguments = fmap unpack args
   liftIO $ rawSystem executable arguments
@@ -58,13 +58,13 @@ frameworks = [RSpec, Minitest]
 
 getRunner :: [Argument] -> TestFramework -> Sh (Maybe TestRunner)
 getRunner args RSpec = do
-  rspecFile <- hasFile ".rspec"
-  return $ case rspecFile of
-             True -> Just $ NewTestRunner "rspec" args
-             False -> Nothing
+  rootDir <- findRootDir "spec"
+  return $ case rootDir of
+             Just r -> Just $ NewTestRunner "rspec" r args
+             Nothing -> Nothing
 
 getRunner args Minitest = do
-  testFile <- hasFile "test"
-  return $ case testFile of
-             True -> Just $ NewTestRunner "rake" ("test" : args)
-             False -> Nothing
+  rootDir <- findRootDir "test"
+  return $ case rootDir of
+             Just r -> Just $ NewTestRunner "rake" r ("test" : args)
+             Nothing -> Nothing

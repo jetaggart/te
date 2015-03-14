@@ -11,6 +11,7 @@ import Te.Listen as Te (listen)
 import Te.Runner
 import Te.Types
 
+
 run :: [Text] -> Sh ()
 run args = run' =<< getTestRunner args
 
@@ -32,11 +33,12 @@ run' testRunner = do
 
 
 asynchronous :: TestRunner -> Sh ()
-asynchronous (isTestRunner -> Just (exe, args)) = do
+asynchronous (isTestRunner -> Just (exe, rootDir, args)) = do
   let stringArgs = intercalate " " args
-      testCommand = fromText $ concat ["echo \"", exe, " ", stringArgs, "\" > .te-pipe"]
+      pipeCommand = fromText $ concat ["echo \"", rootDir, "|", exe, "|", stringArgs, "\" > .te-pipe"]
 
-  escaping False $ run_ testCommand []
+  escaping False $ run_ pipeCommand []
+
 
 synchronous :: TestRunner -> Sh ()
 synchronous = runTest

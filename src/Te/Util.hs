@@ -6,6 +6,10 @@ import Data.Text (concat, Text)
 import Shelly
 
 
+findRootDir :: Text -> Sh (Maybe Text)
+findRootDir _ = return Nothing
+
+
 hasPipe :: Sh Bool
 hasPipe = hasFile ".te-pipe"
 

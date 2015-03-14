@@ -6,14 +6,15 @@ import Data.Text (Text(..))
 
 type Executable = Text
 type Argument = Text
-data TestRunner = OldTestRunner Executable [Argument]
-                | NewTestRunner Executable [Argument]
+type RootDir = Text
+data TestRunner = OldTestRunner Executable RootDir [Argument]
+                | NewTestRunner Executable RootDir [Argument]
                 deriving (Show)
-isTestRunner (OldTestRunner exe args) = Just (exe, args)
-isTestRunner (NewTestRunner exe args) = Just (exe, args)
+isTestRunner (OldTestRunner exe rootDir args) = Just (exe, rootDir, args)
+isTestRunner (NewTestRunner exe rootDir args) = Just (exe, rootDir, args)
 isTestRunner _  = Nothing
 
-isOldTestRunner tr@(OldTestRunner _ _) = Just tr
-isNewTestRunner tr@(NewTestRunner _ _) = Just tr
+isOldTestRunner tr@(OldTestRunner _ _ _) = Just tr
+isNewTestRunner tr@(NewTestRunner _ _ _) = Just tr
 
 data TestFramework = RSpec | Minitest

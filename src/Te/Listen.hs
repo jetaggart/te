@@ -30,11 +30,11 @@ listen' = catch_sh go catchInterrupt
   where
     go = do
       command <- cmd "cat" ".te-pipe" :: Sh Text
-      let splitCommand = splitOn " " $ strip command
+      let splitCommand = splitOn "|" $ strip command
 
-      case (headMay splitCommand) of
-        Just c -> runTest $ NewTestRunner c (tailSafe splitCommand)
-        Nothing -> echo "Something went wrong, there should be a command passed" >> quietExit 1
+      case splitCommand of
+        (exe:rootDir:args) -> runTest $ NewTestRunner exe rootDir args
+        otherwise -> echo "Something went wrong, there should be a command passed" >> quietExit 1
 
 
 init :: Sh ()
