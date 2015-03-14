@@ -17,7 +17,7 @@ listen = do
   file <- hasFile ".te-pipe"
   case file of
     True -> echo "Te already listening for this directory" >> quietExit 1
-    False -> forever $ go =<< hasPipe
+    False -> forever $ go =<< hasPipe (fromText ".")
 
   where
     go pipePresent = case pipePresent of

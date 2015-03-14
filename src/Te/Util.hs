@@ -2,7 +2,7 @@ module Te.Util where
 
 import Import
 
-import Data.Text (concat, Text)
+import Data.Text (concat, pack, Text)
 import Shelly
 
 
@@ -26,8 +26,13 @@ findRootDir fileToFind = do
       findRootDir fileToFind
 
 
-hasPipe :: Sh Bool
-hasPipe = hasFile ".te-pipe"
+hasPipe :: FilePath -> Sh Bool
+hasPipe dir = do
+  startingDir <- pwd
+  cd dir
+  present <- hasFile ".te-pipe"
+  cd startingDir
+  return present
 
 
 hasFile :: Text -> Sh Bool

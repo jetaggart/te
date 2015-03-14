@@ -21,21 +21,26 @@ runLast = run' =<< lastTestRunner
 
 
 run' :: Maybe TestRunner -> Sh ()
-run' testRunner = do
-  go =<< hasPipe
+run' maybeRunner = do
+  case maybeRunner of
+   Just runner -> go runner
+   Nothing -> echo "No test runner found" >> quietExit 1
+
   where
-    go pipePresent = do
-      case testRunner of
-        Just runner -> case pipePresent of
-                          True -> asynchronous runner
-                          False -> synchronous runner
-        Nothing -> echo "No test runner found" >> quietExit 1
+    go runner = do
+      let rootDir = getRoot runner
+      pipe <- hasPipe rootDir
+      if pipe
+      then asynchronous runner
+      else synchronous runner
+
 
 
 asynchronous :: TestRunner -> Sh ()
 asynchronous (isTestRunner -> Just (exe, rootDir, args)) = do
   let stringArgs = intercalate " " args
-      pipeCommand = fromText $ concat ["echo \"", (toTextIgnore rootDir), "|", exe, "|", stringArgs, "\" > .te-pipe"]
+      pipe = concat [(toTextIgnore rootDir), "/.te-pipe"]
+      pipeCommand = fromText $ concat ["echo \"", exe, "|",  (toTextIgnore rootDir), "|", stringArgs, "\" >", pipe]
 
   escaping False $ run_ pipeCommand []
 
@@ -49,7 +54,7 @@ commands = echo "Valid commands are: run, listen, help" >> quietExit 0
 
 
 asyncAvailable :: Sh ()
-asyncAvailable = go =<< hasPipe
+asyncAvailable = go =<< hasPipe "."
   where go pipe = case pipe of
                     True -> quietExit 0
                     False -> quietExit 1

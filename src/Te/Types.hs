@@ -1,3 +1,5 @@
+{-# LANGUAGE ViewPatterns #-}
+
 module Te.Types where
 
 import Import
@@ -15,5 +17,7 @@ isTestRunner (NewTestRunner exe rootDir args) = Just (exe, rootDir, args)
 
 isOldTestRunner tr@(OldTestRunner _ _ _) = Just tr
 isNewTestRunner tr@(NewTestRunner _ _ _) = Just tr
+
+getRoot (isTestRunner -> Just (_, rootDir, _)) = rootDir
 
 data TestFramework = RSpec | Minitest
