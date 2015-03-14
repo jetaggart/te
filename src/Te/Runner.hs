@@ -23,8 +23,6 @@ runTest testRunner@(NewTestRunner exe args) = do
 
 runTest (OldTestRunner exe args) = runTest' exe args
 
-  -- echo $ (pack . show) testRunner
-
 runTest' :: Executable -> [Argument] -> Sh ()
 runTest' exe args = do
   let executable = unpack exe
