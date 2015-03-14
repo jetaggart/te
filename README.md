@@ -59,6 +59,8 @@ Check out this repository, run `cabal install`, copy the `te` executable into yo
 
 ### Editor support
 * [vim](https://github.com/jetaggart/vim-te)
+* [atom](https://github.com/jetaggart/atom-te)
+* [emacs](https://github.com/jetaggart/emacs-te)
 
 ## Vision
 
