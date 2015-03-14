@@ -9,5 +9,8 @@ type Argument = Text
 data TestRunner = OldTestRunner Executable [Argument]
                 | NewTestRunner Executable [Argument]
                 deriving (Show)
+isTestRunner (OldTestRunner exe args) = Just (exe, args)
+isTestRunner (NewTestRunner exe args) = Just (exe, args)
+isTestRunner _  = Nothing
 
 data TestFramework = RSpec | Minitest

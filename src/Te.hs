@@ -1,3 +1,5 @@
+{-# LANGUAGE ViewPatterns #-}
+
 module Te (run, runLast, asyncAvailable, listen, fail, commands) where
 
 import Data.Text (Text, intercalate, concat)
@@ -30,15 +32,11 @@ run' testRunner = do
 
 
 asynchronous :: TestRunner -> Sh ()
-asynchronous (NewTestRunner exe args) = asynchronous' exe args
-asynchronous (OldTestRunner exe args) = asynchronous' exe args
-
-asynchronous' executable testArgs = do
-  let stringArgs = intercalate " " testArgs
-      testCommand = fromText $ concat ["echo \"", executable, " ", stringArgs, "\" > .te-pipe"]
+asynchronous (isTestRunner -> Just (exe, args)) = do
+  let stringArgs = intercalate " " args
+      testCommand = fromText $ concat ["echo \"", exe, " ", stringArgs, "\" > .te-pipe"]
 
   escaping False $ run_ testCommand []
-
 
 synchronous :: TestRunner -> Sh ()
 synchronous = runTest

@@ -1,6 +1,6 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 
-module Te.Runner (runTest, hasPipe, hasFile, getTestRunner, lastTestRunner, TestRunner(..)) where
+module Te.Runner (runTest, hasPipe, hasFile, getTestRunner, lastTestRunner, TestRunner(..), isTestRunner) where
 
 import System.Process
 import Data.Text (Text, pack, unpack, replicate, concat, intercalate)
