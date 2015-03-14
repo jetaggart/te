@@ -60,11 +60,11 @@ getRunner :: [Argument] -> TestFramework -> Sh (Maybe TestRunner)
 getRunner args RSpec = do
   rootDir <- findRootDir "spec"
   return $ case rootDir of
-             Just r -> Just $ NewTestRunner "rspec" r args
-             Nothing -> Nothing
+            Just r -> Just $ NewTestRunner "rspec" (toTextIgnore r) args
+            Nothing -> Nothing
 
 getRunner args Minitest = do
   rootDir <- findRootDir "test"
   return $ case rootDir of
-             Just r -> Just $ NewTestRunner "rake" r ("test" : args)
+             Just r -> Just $ NewTestRunner "rake" (toTextIgnore r) ("test" : args)
              Nothing -> Nothing
