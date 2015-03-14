@@ -35,7 +35,7 @@ run' testRunner = do
 asynchronous :: TestRunner -> Sh ()
 asynchronous (isTestRunner -> Just (exe, rootDir, args)) = do
   let stringArgs = intercalate " " args
-      pipeCommand = fromText $ concat ["echo \"", rootDir, "|", exe, "|", stringArgs, "\" > .te-pipe"]
+      pipeCommand = fromText $ concat ["echo \"", (toTextIgnore rootDir), "|", exe, "|", stringArgs, "\" > .te-pipe"]
 
   escaping False $ run_ pipeCommand []
 

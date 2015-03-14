@@ -33,7 +33,7 @@ listen' = catch_sh go catchInterrupt
       let splitCommand = splitOn "|" $ strip command
 
       case splitCommand of
-        (exe:rootDir:args) -> runTest $ NewTestRunner exe rootDir args
+        (exe:rootDir:args) -> runTest $ NewTestRunner exe (fromText rootDir) args
         otherwise -> echo "Something went wrong, there should be a command passed" >> quietExit 1
 
 

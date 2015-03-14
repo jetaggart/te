@@ -4,6 +4,7 @@
 module Te.Runner (runTest, hasPipe, hasFile, getTestRunner, lastTestRunner) where
 
 import System.Process
+import System.Directory (setCurrentDirectory, getCurrentDirectory)
 import Data.Text (Text, pack, unpack, replicate, concat, intercalate)
 import Data.Text.Read (decimal)
 import Data.Maybe
@@ -28,7 +29,12 @@ runTest' :: TestRunner -> Sh ()
 runTest' (isTestRunner -> Just (exe, rootDir, args)) = do
   let executable = unpack exe
       arguments = fmap unpack args
+
+  startingDir <- liftIO getCurrentDirectory
+
+  liftIO $ setCurrentDirectory . unpack . toTextIgnore $ rootDir
   liftIO $ rawSystem executable arguments
+  liftIO $ setCurrentDirectory startingDir
 
   columns <- silently $ cmd "tput" "cols" :: Sh Text
   let int = case (decimal columns) of
@@ -60,11 +66,11 @@ getRunner :: [Argument] -> TestFramework -> Sh (Maybe TestRunner)
 getRunner args RSpec = do
   rootDir <- findRootDir "spec"
   return $ case rootDir of
-            Just r -> Just $ NewTestRunner "rspec" (toTextIgnore r) args
+            Just r -> Just $ NewTestRunner "rspec" r args
             Nothing -> Nothing
 
 getRunner args Minitest = do
   rootDir <- findRootDir "test"
   return $ case rootDir of
-             Just r -> Just $ NewTestRunner "rake" (toTextIgnore r) ("test" : args)
+             Just r -> Just $ NewTestRunner "rake" r ("test" : args)
              Nothing -> Nothing
