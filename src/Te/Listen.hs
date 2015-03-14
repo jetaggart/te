@@ -9,6 +9,7 @@ import Control.Exception (SomeException, Exception, AsyncException(UserInterrupt
 import Import
 import Shelly
 import Te.Runner
+import Te.Types
 
 
 listen :: Sh ()

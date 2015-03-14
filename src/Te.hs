@@ -9,7 +9,7 @@ import Shelly hiding (run)
 import Import
 import Te.Listen as Te (listen)
 import Te.Runner
-
+import Te.Types
 
 run :: [Text] -> Sh ()
 run args = run' =<< getTestRunner args

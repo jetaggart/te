@@ -13,4 +13,7 @@ isTestRunner (OldTestRunner exe args) = Just (exe, args)
 isTestRunner (NewTestRunner exe args) = Just (exe, args)
 isTestRunner _  = Nothing
 
+isOldTestRunner tr@(OldTestRunner _ _) = Just tr
+isNewTestRunner tr@(NewTestRunner _ _) = Just tr
+
 data TestFramework = RSpec | Minitest

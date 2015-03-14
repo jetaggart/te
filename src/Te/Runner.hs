@@ -1,6 +1,7 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
+{-# LANGUAGE ViewPatterns #-}
 
-module Te.Runner (runTest, hasPipe, hasFile, getTestRunner, lastTestRunner, TestRunner(..), isTestRunner) where
+module Te.Runner (runTest, hasPipe, hasFile, getTestRunner, lastTestRunner) where
 
 import System.Process
 import Data.Text (Text, pack, unpack, replicate, concat, intercalate)
@@ -17,14 +18,14 @@ import qualified Te.History as History
 
 
 runTest :: TestRunner -> Sh ()
-runTest testRunner@(NewTestRunner exe args) = do
+runTest (isNewTestRunner -> Just testRunner)  = do
   History.record testRunner
-  runTest' exe args
+  runTest' testRunner
 
-runTest (OldTestRunner exe args) = runTest' exe args
+runTest (isOldTestRunner -> Just testRunner) = runTest' testRunner
 
-runTest' :: Executable -> [Argument] -> Sh ()
-runTest' exe args = do
+runTest' :: TestRunner -> Sh ()
+runTest' (isTestRunner -> Just (exe, args)) = do
   let executable = unpack exe
       arguments = fmap unpack args
   liftIO $ rawSystem executable arguments
