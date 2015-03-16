@@ -33,7 +33,7 @@ runTest' (isTestRunner -> Just (exe, rootDir, args)) = do
   startingDir <- liftIO getCurrentDirectory
 
   liftIO $ setCurrentDirectory . unpack . toTextIgnore $ rootDir
-  liftIO $ rawSystem executable arguments
+  liftIO $ runRawTest executable arguments
   liftIO $ setCurrentDirectory startingDir
 
   columns <- silently $ cmd "tput" "cols" :: Sh Text
@@ -43,6 +43,10 @@ runTest' (isTestRunner -> Just (exe, rootDir, args)) = do
 
   echo $ replicate int "-"
   echo ""
+
+  where
+    runRawTest exe [""] = rawSystem exe []
+    runRawTest exe args = rawSystem exe args
 
 
 getTestRunner :: [Text] -> Sh (Maybe TestRunner)
