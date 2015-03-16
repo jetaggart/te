@@ -6,6 +6,15 @@ Well.. soon to be universal test runner. The vision is to build a generic comman
 
 ## Usage
 
+Te is designed to be used with a text editor:
+
+### Editor support
+* [vim](https://github.com/jetaggart/vim-te)
+* [atom](https://github.com/jetaggart/atom-te)
+* [emacs](https://github.com/jetaggart/emacs-te)
+
+
+### CLI usage (if you wanted to bring it to another text editor)
 All tests:
 
 ```bash
@@ -56,11 +65,6 @@ brew install jetaggart/te/te
 ### Other platforms
 
 Check out this repository, run `cabal install`, copy the `te` executable into your executable path of choice.
-
-### Editor support
-* [vim](https://github.com/jetaggart/vim-te)
-* [atom](https://github.com/jetaggart/atom-te)
-* [emacs](https://github.com/jetaggart/emacs-te)
 
 ## Vision
 
